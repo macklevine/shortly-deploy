@@ -104,12 +104,10 @@ module.exports = function(grunt) {
   // Main grunt tasks
   ////////////////////////////////////////////////////
 
-  grunt.registerTask('test', [
-    'mochaTest'
-  ]);
+  grunt.registerTask('test', ['mochaTest']);
 
-  grunt.registerTask('build', [
-  ]);
+  grunt.registerTask('build', ['jshint', 'concat', 'uglify']);
+  // could add a 'clean' and 'mkdir' for build
 
   grunt.registerTask('upload', function(n) {
     if(grunt.option('prod')) {
