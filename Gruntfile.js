@@ -3,6 +3,13 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      options: {
+        separator: '\n'
+      },
+      dist: {
+        src: ['public/client/*.js', 'public/lib/*.js']
+        dest: 'dist/<%= pkg.name %>.js'
+      }
     },
 
     mochaTest: {
@@ -21,12 +28,19 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      options: {
+        // add a comment with the date of concatenation
+        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+      },
+      dist: {
+        files: {
+          'dist/build.min.js': ['<%= concat.dist.dest %>']
+        }
+      }
     },
 
     jshint: {
-      files: [
-        // Add filespec list here
-      ],
+      files: ['Gruntfile.js', 'public/**/*.js'],
       options: {
         force: 'true',
         jshintrc: '.jshintrc',
@@ -38,16 +52,16 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
-        // Add filespec list here
+      files: {
+        'dist/style.min.css': ['public/style.css']
+      }      // Add filespec list here
     },
 
     watch: {
       scripts: {
-        files: [
-          'public/client/**/*.js',
-          'public/lib/**/*.js',
-        ],
+        files: ['<%= concat.dist.src %>'],
         tasks: [
+          'jshint',
           'concat',
           'uglify'
         ]
