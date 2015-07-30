@@ -2,6 +2,17 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    
+    mkdir: {
+      options: {
+        create: ['public/dist']
+      }
+    },
+
+    clean: {
+      ['public/dist']
+    },
+
     concat: {
       options: {
         separator: '\n'
@@ -104,22 +115,21 @@ module.exports = function(grunt) {
   // Main grunt tasks
   ////////////////////////////////////////////////////
 
-  grunt.registerTask('test', ['mochaTest']);
+  grunt.registerTask('test', ['jshint', 'mochaTest']);
 
-  grunt.registerTask('build', ['jshint', 'concat', 'uglify']);
-  // could add a 'clean' and 'mkdir' for build
+  grunt.registerTask('build', ['jshint', 'mochaTest', 'clean', 'mkdir', 'concat', 'uglify', 'cssmin']);
+
+  grunt.registerTask('deploy', ['clean', 'mkdir', 'concat', 'uglify', 'cssmin']);
+      // add your production server task here
+
+  grunt.registerTask('default', ['jshint']);
 
   grunt.registerTask('upload', function(n) {
     if(grunt.option('prod')) {
+      grunt.task.run(['deploy']);
       // add your production server task here
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
   });
-
-  grunt.registerTask('deploy', [
-      // add your production server task here
-  ]);
-
-
 };
