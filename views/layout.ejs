@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <title>Shortly</title>
     
-    <% if (NODE_ENV="production") { %>
+    <% if (process.env.NODE_ENV=="production") { %>
       
       <link rel="stylesheet" type="text/css" href="/dist/style.min.css">
-      <script src='/dist/build.min.js'></script>
+      <script src='/dist/lib.min.js'></script>
     
     <%  } else { %>
       
