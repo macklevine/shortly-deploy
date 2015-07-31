@@ -28,7 +28,7 @@
     "grunt-shell": "^0.6.4",
     "knex": "~0.5.7",
     "mocha": "^1.17.1",
-    "mongoose": "~3.8.8",
+    "mongoose": "https://registry.npmjs.org/mongoose/-/mongoose-3.8.34.tgz",
     "request": "^2.34.0",
     "sqlite3": "~3.0.9"
   },
