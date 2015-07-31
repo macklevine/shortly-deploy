@@ -9,17 +9,20 @@ module.exports = function(grunt) {
       }
     },
 
-    clean: {
-      ['public/dist']
-    },
+    clean: ['public/dist'],
 
     concat: {
       options: {
         separator: '\n'
       },
-      dist: {
-        src: ['public/client/*.js', 'public/lib/*.js']
-        dest: 'dist/<%= pkg.name %>.js'
+      lib: {
+        src: ['public/lib/jquery.js', 'public/lib/underscore.js', 'public/lib/backbone.js', 'public/lib/handlebars.js'],
+        dest: 'public/dist/<%= pkg.name %>-lib.js'
+      },
+      client: {
+        src: ['public/client/app.js', 'public/client/link.js', 'public/client/links.js', 'public/client/linkView.js',
+        'public/client/linksView.js', 'public/client/createLinkView.js', 'public/client/router.js'],
+        dest: 'public/dist/<%= pkg.name %>-client.js'
       }
     },
 
@@ -40,18 +43,19 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        // add a comment with the date of concatenation
+        // add a comment with the date the file  was minified
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
       },
       dist: {
         files: {
-          'dist/build.min.js': ['<%= concat.dist.dest %>']
+          'public/dist/lib.min.js': ['<%= concat.lib.dest %>'],
+          'public/dist/client.min.js': ['<%= concat.client.dest %>']
         }
       }
     },
 
     jshint: {
-      files: ['Gruntfile.js', 'public/**/*.js'],
+      files: ['Gruntfile.js', 'public/**/*.js', 'server-config.js', 'server.js'],
       options: {
         force: 'true',
         jshintrc: '.jshintrc',
@@ -63,14 +67,20 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
-      files: {
-        'dist/style.min.css': ['public/style.css']
-      }      // Add filespec list here
+      target: {
+        files: [{
+          expand: true,
+          cwd: 'public',
+          src: ['*.css', '!*.min.css'],
+          dest: 'public/dist',
+          ext: '.min.css'
+        }]
+      }
     },
 
     watch: {
       scripts: {
-        files: ['<%= concat.dist.src %>'],
+        files: ['<%= concat.lib.src %>', '<%= concat.client.src %>'],
         tasks: [
           'jshint',
           'concat',
@@ -88,7 +98,9 @@ module.exports = function(grunt) {
       }
     },
   });
-
+  
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-mkdir');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
