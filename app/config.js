@@ -43,3 +43,69 @@ db.knex.schema.hasTable('users').then(function(exists) {
 });
 
 module.exports = db;
+
+
+///////////////////////////////////////
+// Mongoose Implementation
+///////////////////////////////////////
+
+var mongoose = require('mongoose');
+var crypto = require('crypto');
+var bcrypt = require('bcrypt-nodejs');
+var Promise = require('bluebird');
+
+var dbName = 'shortlydb';
+
+mongoose.connect('mongodb://localhost/' + dbName);
+
+var db = mongoose.connection;
+
+var linkSchema = mongoose.Schema({
+  url: String,
+  base_url: String,
+  title: String,
+  code: String,
+  visits: {type: Number, default: 0}
+});
+
+linkSchema.methods.init = function() {
+  var shasum = crypto.createHash('sha1');
+  shasum.update(this.url);
+  this.code = shasum.digest('hex').slice(0, 5); 
+};
+
+var userSchema = mongoose.Schema({
+  username: String,
+  password: String
+});
+
+userSchema.methods.init = function(){
+  var cipher = Promise.promisify(bcrypt.hash);
+  return cipher(this.password, null, null).bind(this)
+    .then(function(hash) {
+      this.password = hash;
+    });
+}
+
+Jill = new User(...);
+Jill.init();
+Jill.save();
+
+userSchema.methods.comparePassword = function(){
+  
+}
+
+var Link = mongoose.model("Link", linkSchema);
+
+var User = mongoose.model("User", userSchema);
+
+// db.on('error', console.error.bind(console, 'connection error:'));
+// db.once('open', function (callback) {
+//   console.log('Connected to ' + dbName + "!");
+
+//   var linkSchema = mongoose.Schema({
+//     code:
+//   });
+// });
+
+
